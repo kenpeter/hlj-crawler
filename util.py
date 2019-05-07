@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from pymongo import MongoClient
+from pprint import pprint
 
 class Util:
   def __init__(self):
@@ -52,6 +54,10 @@ class Util:
 
           imgSrcArr.append(src)    
   
-    print(imgSrcArr)
-
+    #print(imgSrcArr)
     browser.quit()
+
+    client = MongoClient('mongodb://localhost:27017/hlj')
+    db = client.hlj
+    res = db.command("serverStatus")
+    pprint(res)

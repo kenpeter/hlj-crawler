@@ -1,8 +1,11 @@
 from util import Util
+from pymongo import MongoClient
+from pprint import pprint
 
 #utilObj = Util()
 #utilObj.run()
 
-mystr = 'https://hlj.com/media/catalog/product/cache/thumbnail/80x60/beff4985b56e3afdbeabfc89641a4582/b/a/bans55361_0.png'
-
-print(mystr.find("80x61"))
+client = MongoClient('mongodb://localhost:27017/hlj')
+db = client.hlj
+res = db.command("serverStatus")
+pprint(res)
