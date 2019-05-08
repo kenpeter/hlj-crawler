@@ -56,6 +56,20 @@ class Util:
     dirname = filename.rsplit('_', 1)[0]
     return dirname, filename
 
+  def writeToDB(self, imgLink):
+    # insert
+    dirname, filename = self.parseImgLink(imgLink)
+    obj = {
+      'imgLink': imgLink,
+      'category': 'bandai',
+      'dirname': dirname,
+      'filename': filename,
+      'updateDate': datetime.now(),
+      'createdDate': datetime.now(),
+      'status': ''
+    }
+    self.db.queue.insert_one(obj)
+
   def buildQueueTable(self):
     # clean up
     self.cleanQueueTable()
@@ -98,7 +112,11 @@ class Util:
           # indicate
           print(src)
 
-          imgSrcArr.append(src)    
+          # write to db
+          self.writeToDB(src) 
+
+          # dl and write to file 
+           
       
       # next link
       self.updateQueueAtHistory(linkItem)
@@ -106,19 +124,5 @@ class Util:
     # quit
     browser.quit()
 
-    
-    # insert
-    for imgLink in imgSrcArr:
-      dirname, filename = self.parseImgLink(imgLink)
-      obj = {
-        'imgLink': imgLink,
-        'category': 'bandai',
-        'dirname': dirname,
-        'filename': filename,
-        'updateDate': datetime.now(),
-        'createdDate': datetime.now(),
-        'status': ''
-      }
-      db.queue.insert_one(obj)
 
     print("done")
