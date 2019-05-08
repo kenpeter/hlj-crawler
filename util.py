@@ -9,7 +9,7 @@ class Util:
     self.client = MongoClient('mongodb://localhost:27017/hlj')
     self.db = self.client.hlj
     self.initLinkPart = 'https://hlj.com/search/go?p=Q&srid=S1-1DFWP&lbc=hobbylink&ts=custom&w=*&uid=699945098&method=and&af=selectmanufacturer%3abandai&isort=globalpop&view=grid&srt='
-    self.productStartNum = 12*4
+    self.productStartNum = 12
 
   def cleanQueueTable(self):
     db = self.db
@@ -53,7 +53,7 @@ class Util:
 
   def parseImgLink(self, imgLink):
     filename = imgLink.rsplit('/', 1)[-1]
-    dirname = filename.rsplit('_', 1)[0]
+    dirname = filename.split('_')[0]
     return dirname, filename
 
   def writeToDB(self, imgLink):
@@ -74,9 +74,6 @@ class Util:
     # clean up
     self.cleanQueueTable()
 
-    db = self.client.hlj
-
-    imgSrcArr = []
     arr = self.getLinkArr()
     # headless
     options = webdriver.ChromeOptions()
