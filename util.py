@@ -5,13 +5,14 @@ from pprint import pprint
 from datetime import datetime
 import urllib2
 import os
+import config
 
 class Util:
   def __init__(self):
     self.client = MongoClient('mongodb://localhost:27017/hlj')
     self.db = self.client.hlj
     self.initLinkPart = 'https://hlj.com/search/go?p=Q&srid=S1-1DFWP&lbc=hobbylink&ts=custom&w=*&uid=699945098&method=and&af=selectmanufacturer%3abandai&isort=globalpop&view=grid&srt='
-    self.productStartNum = 12
+    self.productStartNum = 12*100
 
   def cleanQueueTable(self):
     db = self.db
@@ -95,7 +96,7 @@ class Util:
     # headless
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
-    browser = webdriver.Chrome(executable_path='/usr/local/bin/chromedriver', chrome_options=options)
+    browser = webdriver.Chrome(executable_path=config.chromedriver, chrome_options=options)
 
     # listing page
     for linkItem in arr:

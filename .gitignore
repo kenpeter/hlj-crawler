@@ -1,3 +1,4 @@
 *.log
-util.pyc
+*.pyc
 files
+config.py
