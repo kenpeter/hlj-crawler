@@ -3,6 +3,8 @@ from selenium import webdriver
 from pymongo import MongoClient
 from pprint import pprint
 from datetime import datetime
+import urllib2
+import os
 
 class Util:
   def __init__(self):
@@ -70,6 +72,21 @@ class Util:
     }
     self.db.queue.insert_one(obj)
 
+  def download_web_image(self, url, folder_base, folder_name, file_name):
+    try:
+      dir_path = folder_base + '/' + folder_name
+      if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    except IOError as e:
+        print('io error', e)
+    except Exception as e:
+        print('exception', e)
+
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
+    request = urllib2.Request(url, headers=headers)
+    img = urllib2.urlopen(request).read()
+    with open (dir_path + '/' + file_name, 'w') as f: f.write(img)
+
   def buildQueueTable(self):
     # clean up
     self.cleanQueueTable()
@@ -112,8 +129,9 @@ class Util:
           # write to db
           self.writeToDB(src) 
 
-          # dl and write to file 
-           
+          # dl and write to file
+          dirname, filename = self.parseImgLink(src)
+          self.download_web_image(src, 'files', dirname, filename)
       
       # next link
       self.updateQueueAtHistory(linkItem)
