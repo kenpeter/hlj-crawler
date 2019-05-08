@@ -6,13 +6,44 @@ from datetime import datetime
 
 class Util:
   def __init__(self):
-    pass
+    self.client = MongoClient('mongodb://localhost:27017/hlj')
+    self.db = self.client.hlj
+    self.initLinkPart = 'https://hlj.com/search/go?p=Q&srid=S1-1DFWP&lbc=hobbylink&ts=custom&w=*&uid=699945098&method=and&af=selectmanufacturer%3abandai&isort=globalpop&view=grid&srt='
+    self.productStartNum = 12
+
+  def cleanQueueTable(self):
+    db = self.db
+    db.queue.drop()
+
+  def isCollectionExisted(self, nameNeed):
+    names = self.db.collection_names()
+    for name in names:
+      if(name == nameNeed):
+        return True
+
+    return False
+
+  def updateQueueAtHistory(self, link):
+    queueAt = self.db.queueAt
+    myquery = {}
+    newvalue = { "$set": { "history": link } }
+    queueAt.update_one(myquery, newvalue)
 
   def getLinkArr(self):
+    if(not self.isCollectionExisted('queueAt')):
+      obj = {
+        'history': self.initLinkPart + '0'
+      }
+      self.db.queueAt.insert_one(obj)
+
+    item = self.db.queueAt.find_one()
+    historyUrl = item['history']
+
+    #
     arr=[]
-    i=0
-    len = 0
-    link = 'https://hlj.com/search/go?p=Q&srid=S1-1DFWP&lbc=hobbylink&ts=custom&w=*&uid=699945098&method=and&af=selectmanufacturer%3abandai&isort=globalpop&view=grid&srt='
+    i = int(historyUrl[-1])
+    len = self.productStartNum
+    link = self.initLinkPart
     while i<=len:
       newlink = link + str(i)
       arr.append(newlink)
@@ -25,9 +56,7 @@ class Util:
     return dirname, filename
 
   def buildQueueTable(self):
-    client = MongoClient('mongodb://localhost:27017/hlj')
-    db = client.hlj
-    db.queue.drop()
+    db = self.client.hlj
 
     imgSrcArr = []
     arr = self.getLinkArr()
@@ -66,7 +95,11 @@ class Util:
           print(src)
 
           imgSrcArr.append(src)    
+      
+      # next link
+      self.updateQueueAtHistory(linkItem)
 
+    # quit
     browser.quit()
 
     
@@ -83,5 +116,5 @@ class Util:
         'status': ''
       }
       db.queue.insert_one(obj)
-  
+
     print("done")
