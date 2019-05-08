@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from pymongo import MongoClient
 from pprint import pprint
+from datetime import datetime
 
 class Util:
   def __init__(self):
@@ -18,7 +19,16 @@ class Util:
       i = i+12
     return arr
 
+  def parseImgLink(self, imgLink):
+    filename = imgLink.rsplit('/', 1)[-1]
+    dirname = filename.rsplit('_', 1)[0]
+    return dirname, filename
+
   def buildQueueTable(self):
+    client = MongoClient('mongodb://localhost:27017/hlj')
+    db = client.hlj
+    db.queue.drop()
+
     imgSrcArr = []
     arr = self.getLinkArr()
     # headless
@@ -52,12 +62,26 @@ class Util:
           if src.find("80x60") != -1:
             continue
 
+          # indicate
+          print(src)
+
           imgSrcArr.append(src)    
-  
-    #print(imgSrcArr)
+
     browser.quit()
 
-    client = MongoClient('mongodb://localhost:27017/hlj')
-    db = client.hlj
-    res = db.command("serverStatus")
-    pprint(res)
+    
+    # insert
+    for imgLink in imgSrcArr:
+      dirname, filename = self.parseImgLink(imgLink)
+      obj = {
+        'imgLink': imgLink,
+        'category': 'bandai',
+        'dirname': dirname,
+        'filename': filename,
+        'updateDate': datetime.now(),
+        'createdDate': datetime.now(),
+        'status': ''
+      }
+      db.queue.insert_one(obj)
+  
+    print("done")
