@@ -9,11 +9,12 @@ class Util:
     self.client = MongoClient('mongodb://localhost:27017/hlj')
     self.db = self.client.hlj
     self.initLinkPart = 'https://hlj.com/search/go?p=Q&srid=S1-1DFWP&lbc=hobbylink&ts=custom&w=*&uid=699945098&method=and&af=selectmanufacturer%3abandai&isort=globalpop&view=grid&srt='
-    self.productStartNum = 12
+    self.productStartNum = 12*4
 
   def cleanQueueTable(self):
     db = self.db
     db.queue.drop()
+    db.queueAt.drop()
 
   def isCollectionExisted(self, nameNeed):
     names = self.db.collection_names()
@@ -56,6 +57,9 @@ class Util:
     return dirname, filename
 
   def buildQueueTable(self):
+    # clean up
+    self.cleanQueueTable()
+
     db = self.client.hlj
 
     imgSrcArr = []
