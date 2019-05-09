@@ -89,8 +89,8 @@ class Util:
     with open (dir_path + '/' + file_name, 'w') as f: f.write(img)
 
   def buildQueueTable(self):
-    # clean up
-    self.cleanQueueTable()
+    # no clean up
+    # self.cleanQueueTable()
 
     arr = self.getLinkArr()
     # headless
@@ -100,6 +100,11 @@ class Util:
 
     # listing page
     for linkItem in arr:
+
+      # indicate
+      print('-- linkItem --')
+      print(linkItem)
+
       browser.get(linkItem)
       pageSource = browser.page_source
       groupHtml = BeautifulSoup(pageSource, 'lxml')

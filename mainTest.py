@@ -1,7 +1,5 @@
-link = 'https://hlj.com/media/catalog/product/cache/image/e9c3970ab036de70892d86c6d221abfe/b/a/bans57842_3.jpg'
+from util import Util
 
-filename = link.rsplit('/', 1)[-1]
-
-dirname = filename.rsplit('_', 1)[0]
-
-print(filename, dirname)
+utilObj = Util()
+link = 'https://hlj.com/search/go?p=Q&srid=S1-1DFWP&lbc=hobbylink&ts=custom&w=*&uid=699945098&method=and&af=selectmanufacturer%3abandai&isort=globalpop&view=grid&srt=12'
+utilObj.updateQueueAtHistory(link)
